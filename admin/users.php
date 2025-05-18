@@ -58,14 +58,17 @@ $total_records = $stmt->fetchColumn();
 $total_pages = ceil($total_records / $per_page);
 
 // 获取用户列表
-$sql = "SELECT * FROM users 
+$sql = "SELECT id, username, email, role, created_at FROM users 
         $where_clause 
         ORDER BY id DESC 
         LIMIT $per_page OFFSET $offset";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
-$users = $stmt->fetchAll();
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 调试信息
+error_log("Users data: " . print_r($users, true));
 
 require_once '../includes/header.php';
 ?>
@@ -140,7 +143,7 @@ require_once '../includes/header.php';
                     <td><?php echo date('Y-m-d H:i', strtotime($user['created_at'])); ?></td>
                     <td>
                         <a href="user_edit.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-primary">编辑</a>
-                        <?php if ($user['id'] !== $_SESSION['user_id']): ?>
+                        <?php if (isset($_SESSION['user_id']) && $user['id'] !== $_SESSION['user_id']): ?>
                             <form method="POST" class="d-inline" onsubmit="return confirm('确定要删除此用户吗？');">
                                 <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                 <button type="submit" name="delete_user" class="btn btn-sm btn-danger">删除</button>

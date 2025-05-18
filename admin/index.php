@@ -11,11 +11,11 @@ try {
     $total_books = $stmt->fetchColumn();
     
     // 总用户数
-    $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'user'");
+    $stmt = $pdo->query("SELECT COUNT(*) FROM users");
     $total_users = $stmt->fetchColumn();
     
-    // 总借阅数
-    $stmt = $pdo->query("SELECT COUNT(*) FROM borrow_records");
+    // 总借阅数（当前借阅中）
+    $stmt = $pdo->query("SELECT COUNT(*) FROM borrow_records WHERE status = 'borrowed'");
     $total_borrows = $stmt->fetchColumn();
     
     // 当前借阅中

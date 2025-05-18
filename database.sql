@@ -55,3 +55,8 @@ CREATE TABLE reviews (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (book_id) REFERENCES books(id)
 );
+
+-- 插入测试用户
+INSERT INTO users (username, password, email, role) VALUES 
+('Test', '123456', 'Test@email.com', 'user'),
+('Admin', '123456', 'Admin@email.com', 'admin');
