@@ -1,200 +1,139 @@
-# 图书管理系统文档
+# 图书管理系统
+## 模块代码：COM6023M
+## 学生信息：[待填写]
 
-## 封面
+---
 
-**模块代码：** COM6023M  
-**作业标题：** 图书管理系统  
-**学生姓名：** Memoryseeking  
-**学号：** [你的学号]
+## 1. 应用说明
 
-## 应用说明
+### 1.1 应用目的
+本系统是一个基于PHP的图书管理系统，旨在提供完整的图书管理、借阅管理和用户管理功能，为图书馆或图书管理机构提供数字化解决方案。
 
-### 目的和功能描述
+### 1.2 核心功能
+- 用户认证与授权系统
+- 图书信息管理
+- 借阅管理
+- 用户管理
 
-本系统是一个基于 PHP 和 MySQL 的图书管理系统，旨在提供图书管理、借阅、评论等功能的完整解决方案。主要功能包括：
+### 1.3 技术架构
+- 后端：PHP 7.4+
+- 数据库：MySQL 5.7+
+- 前端：HTML5, CSS3, JavaScript
+- 身份验证：JWT (JSON Web Token)
 
-1. 用户管理
-   - 用户注册和登录
-   - 个人信息管理
-   - 头像上传
+### 1.4 API端点
+#### 用户认证
+- POST /login.php - 用户登录
+- POST /register.php - 用户注册
+- GET /logout.php - 用户登出
 
-2. 图书管理
-   - 图书列表展示
-   - 图书详情查看
-   - 图书搜索和分类
+#### 图书管理
+- GET /books.php - 获取图书列表
+- POST /books.php - 添加新图书
+- PUT /books.php/{id} - 更新图书信息
+- DELETE /books.php/{id} - 删除图书
 
-3. 借阅管理
-   - 图书借阅
-   - 借阅记录查看
-   - 借阅状态管理
+#### 借阅管理
+- POST /borrow.php - 借阅图书
+- POST /return.php - 归还图书
+- GET /borrow-history.php - 获取借阅历史
 
-4. 评论系统
-   - 图书评论
-   - 评分功能
-   - 评论管理
+### 1.5 数据库结构
+主要数据表：
+- users - 用户信息表
+- books - 图书信息表
+- borrow_records - 借阅记录表
 
-### 服务详细说明
+---
 
-#### API 端点
+## 2. 安装指南
 
-1. 用户相关
-   - `/register.php` - 用户注册
-   - `/login.php` - 用户登录
-   - `/logout.php` - 用户登出
-   - `/profile.php` - 用户信息管理
+### 2.1 服务器环境要求
+- PHP >= 7.4
+- MySQL >= 5.7
+- Apache/Nginx Web服务器
+- 必要的PHP扩展：PDO, JSON, bcrypt
 
-2. 图书相关
-   - `/index.php` - 首页（图书列表）
-   - `/detail.php` - 图书详情
-   - `/list.php` - 图书列表
-   - `/borrow.php` - 图书借阅
-   - `/borrow_records.php` - 借阅记录
-
-#### 数据库表结构
-
-1. users 表
-```sql
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    avatar VARCHAR(255),
-    role ENUM('user', 'admin') DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-2. books 表
-```sql
-CREATE TABLE books (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    isbn VARCHAR(20) NOT NULL UNIQUE,
-    description TEXT,
-    cover VARCHAR(255),
-    category VARCHAR(50),
-    total_copies INT NOT NULL DEFAULT 1,
-    available_copies INT NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-3. borrows 表
-```sql
-CREATE TABLE borrows (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    book_id INT NOT NULL,
-    borrow_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    due_date TIMESTAMP NOT NULL,
-    return_date TIMESTAMP NULL,
-    status ENUM('borrowed', 'returned', 'overdue') DEFAULT 'borrowed',
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (book_id) REFERENCES books(id)
-);
-```
-
-4. reviews 表
-```sql
-CREATE TABLE reviews (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    book_id INT NOT NULL,
-    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-    comment TEXT,
-    approved BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (book_id) REFERENCES books(id)
-);
-```
-
-## 安装指南
-
-### 服务器环境配置
-
-1. PHP 版本要求：PHP 7.4 或更高版本
-2. MySQL 版本要求：MySQL 5.7 或更高版本
-3. Web 服务器：Apache 或 Nginx
-4. 操作系统：Windows/Linux/MacOS
-
-### 依赖库安装
-
-1. PHP 依赖（通过 Composer 安装）：
+### 2.2 依赖库安装
 ```bash
+# 安装PHP依赖
 composer install
+
+# 安装前端依赖
+npm install
 ```
 
-2. 前端依赖：
-- Bootstrap 5
-- Font Awesome 5
-- jQuery 3.6.0
-
-### 数据库初始化
-
-1. 创建数据库：
-```sql
-CREATE DATABASE library;
-```
-
-2. 导入数据库结构：
+### 2.3 配置步骤
+1. 克隆仓库
 ```bash
-mysql -u username -p library < database.sql
+git clone [仓库地址]
 ```
 
-## 访问说明
+2. 数据库配置
+- 创建新的MySQL数据库
+- 导入 `database.sql` 文件
+- 配置数据库连接信息
 
-### 应用访问
+3. 环境配置
+- 复制 `config.example.php` 为 `config.php`
+- 修改数据库连接信息
+- 设置JWT密钥
 
-- URL：http://localhost/Library
-- 默认端口：80（Apache）或 443（HTTPS）
+4. Web服务器配置
+- 将项目目录设置为Web根目录
+- 配置URL重写规则
+- 设置适当的文件权限
 
-### 测试账号
+---
 
+## 3. 访问说明
+
+### 3.1 应用访问
+- URL：http://ysjcs.net:[端口号]
+- 默认端口：80
+
+### 3.2 测试账号
 1. 管理员账号
-   - 用户名：admin
-   - 密码：admin123
+   - 用户名：Admin
+   - 密码：123456
+   - 邮箱：Admin@email.com
 
-2. 普通用户账号
-   - 用户名：user
-   - 密码：user123
+2. 测试用户账号
+   - 用户名：Test
+   - 密码：123456
+   - 邮箱：Test@email.com
 
-## 代码引用
+---
 
-### 第三方库和框架
+## 4. 代码引用
 
-1. Bootstrap 5
-   - 来源：https://getbootstrap.com/
-   - 用途：前端 UI 框架
-   - 许可证：MIT
+### 4.1 第三方库
+- JWT库：[jwt-php](https://github.com/firebase/php-jwt)
+- 密码加密：PHP内置bcrypt
+- 前端框架：Bootstrap 5
 
-2. Font Awesome 5
-   - 来源：https://fontawesome.com/
-   - 用途：图标库
-   - 许可证：MIT
+### 4.2 参考资源
+- PHP官方文档：[php.net](https://www.php.net/docs.php)
+- MySQL文档：[dev.mysql.com](https://dev.mysql.com/doc/)
+- JWT规范：[jwt.io](https://jwt.io/)
 
-3. jQuery
-   - 来源：https://jquery.com/
-   - 用途：JavaScript 库
-   - 许可证：MIT
+---
 
-4. PHP PDO
-   - 来源：PHP 内置
-   - 用途：数据库连接
-   - 许可证：PHP License
+## 5. 安全说明
 
-### 开源组件
+### 5.1 安全特性
+- 密码加密存储（bcrypt）
+- XSS防护
+- CSRF防护
+- SQL注入防护
+- 安全的Cookie设置
 
-1. 文件上传处理
-   - 来源：自定义实现
-   - 用途：处理用户头像和图书封面上传
+### 5.2 身份验证
+- JWT token有效期：1小时
+- 支持token自动刷新
+- 双重验证机制（Session + JWT）
 
-2. 密码加密
-   - 来源：PHP 内置 password_hash()
-   - 用途：用户密码加密存储
+---
 
-3. 会话管理
-   - 来源：PHP 内置 session
-   - 用途：用户登录状态管理 
+## 许可证
+MIT License 
