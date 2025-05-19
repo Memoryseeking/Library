@@ -53,36 +53,108 @@
 - MySQL >= 5.7
 - Apache/Nginx Web服务器
 - 必要的PHP扩展：PDO, JSON, bcrypt
+- SSL证书（用于HTTPS）
 
-### 2.2 依赖库安装
-```bash
-# 安装PHP依赖
-composer install
+### 2.2 腾讯云部署步骤
 
-# 安装前端依赖
-npm install
-```
+1. 购买腾讯云服务器
+   - 推荐配置：2核4G内存
+   - 操作系统：CentOS 7.6 或 Ubuntu 20.04
+   - 带宽：5Mbps以上
 
-### 2.3 配置步骤
-1. 克隆仓库
-```bash
-git clone [仓库地址]
-```
+2. 环境配置
+   ```bash
+   # 安装LNMP环境
+   yum install -y nginx mysql-server php-fpm php-mysql
+   
+   # 启动服务
+   systemctl start nginx
+   systemctl start mysqld
+   systemctl start php-fpm
+   
+   # 设置开机自启
+   systemctl enable nginx
+   systemctl enable mysqld
+   systemctl enable php-fpm
+   ```
 
-2. 数据库配置
-- 创建新的MySQL数据库
-- 导入 `database.sql` 文件
-- 配置数据库连接信息
+3. SSL证书配置
+   - 在腾讯云SSL证书控制台申请免费证书
+   - 下载证书文件
+   - 配置Nginx SSL：
+     ```nginx
+     server {
+         listen 443 ssl;
+         server_name your-domain.com;
+         
+         ssl_certificate /path/to/cert.pem;
+         ssl_certificate_key /path/to/key.pem;
+         
+         # SSL配置
+         ssl_protocols TLSv1.2 TLSv1.3;
+         ssl_ciphers HIGH:!aNULL:!MD5;
+         ssl_prefer_server_ciphers on;
+         
+         root /var/www/html;
+         index index.php index.html;
+         
+         location / {
+             try_files $uri $uri/ /index.php?$query_string;
+         }
+         
+         location ~ \.php$ {
+             fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;
+             fastcgi_index index.php;
+             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+             include fastcgi_params;
+         }
+     }
+     ```
 
-3. 环境配置
-- 复制 `config.example.php` 为 `config.php`
-- 修改数据库连接信息
-- 设置JWT密钥
+4. 项目部署
+   ```bash
+   # 克隆项目
+   git clone [仓库地址] /var/www/html/
+   
+   # 设置权限
+   chown -R nginx:nginx /var/www/html
+   chmod -R 755 /var/www/html
+   chmod -R 777 /var/www/html/uploads
+   
+   # 配置数据库
+   mysql -u root -p
+   CREATE DATABASE library;
+   USE library;
+   source /var/www/html/database.sql;
+   ```
 
-4. Web服务器配置
-- 将项目目录设置为Web根目录
-- 配置URL重写规则
-- 设置适当的文件权限
+5. 安全配置
+   - 配置防火墙
+   ```bash
+   # 开放必要端口
+   firewall-cmd --permanent --add-service=http
+   firewall-cmd --permanent --add-service=https
+   firewall-cmd --reload
+   ```
+   
+   - 设置数据库安全
+   ```sql
+   CREATE USER 'library_user'@'localhost' IDENTIFIED BY 'your_password';
+   GRANT ALL PRIVILEGES ON library.* TO 'library_user'@'localhost';
+   FLUSH PRIVILEGES;
+   ```
+
+6. 性能优化
+   - 启用PHP OPcache
+   - 配置Nginx缓存
+   - 设置MySQL优化参数
+
+### 2.3 访问说明
+- 域名：https://your-domain.com
+- 默认端口：443
+- 测试账号：
+  - 管理员：Admin/123456
+  - 普通用户：Test/123456
 
 ---
 
