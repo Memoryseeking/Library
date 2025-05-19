@@ -22,7 +22,7 @@ ini_set('session.use_only_cookies', 1);
 ini_set('session.cookie_samesite', 'Strict');
 
 // 基础URL配置
-$base_url = 'https://' . $_SERVER['HTTP_HOST'];
+$base_url = 'http://' . $_SERVER['HTTP_HOST'];
 $current_url = $base_url . $_SERVER['REQUEST_URI'];
 
 // 数据库连接
@@ -36,9 +36,9 @@ try {
 
 // 通用函数
 function redirect($url) {
-    // 确保URL使用HTTPS
+    // 确保URL使用HTTP
     if (strpos($url, 'http') !== 0) {
-        $url = 'https://' . $_SERVER['HTTP_HOST'] . $url;
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . $url;
     }
     header("Location: $url");
     exit();
