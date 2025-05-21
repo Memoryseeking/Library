@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description']);
     $category_id = (int)$_POST['category_id'];
     $stock_quantity = (int)$_POST['stock_quantity'];
-    $published_date = trim($_POST['published_date']);
+    $published_date = !empty($_POST['published_date']) ? trim($_POST['published_date']) : date('Y-m-d');
     
     // 验证必填字段
     if (empty($title) || empty($author) || empty($isbn)) {

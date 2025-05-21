@@ -17,7 +17,7 @@ CREATE TABLE books (
     isbn VARCHAR(20) UNIQUE NOT NULL,
     description TEXT,
     cover_image VARCHAR(255),
-    published_date DATE,
+    published_date DATE DEFAULT CURRENT_DATE,
     category_id INT,
     stock_quantity INT DEFAULT 1,
     FOREIGN KEY (category_id) REFERENCES categories(id)

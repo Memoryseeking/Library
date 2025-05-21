@@ -14,10 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
+    $captcha = strtoupper(trim($_POST['captcha'] ?? ''));
 
     // 验证输入
-    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+    if (empty($username) || empty($email) || empty($password) || empty($confirm_password) || empty($captcha)) {
         $error = '请填写所有必填字段';
+    } elseif (!isset($_SESSION['captcha']) || $captcha !== $_SESSION['captcha']) {
+        $error = '验证码错误';
     } elseif ($password !== $confirm_password) {
         $error = '两次输入的密码不一致';
     } elseif (strlen($password) < 6) {
@@ -41,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
                 if ($stmt->execute([$username, $email, $hashed_password])) {
+                    unset($_SESSION['captcha']); // 清除验证码
                     $success = '注册成功！请登录';
                 } else {
                     $error = '注册失败，请稍后重试';
@@ -92,6 +96,15 @@ require_once 'includes/header.php';
                     <label for="confirm_password" class="form-label">确认密码</label>
                     <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
                     <div class="invalid-feedback">请再次输入密码</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="captcha" class="form-label">验证码</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="captcha" name="captcha" required>
+                        <img src="captcha.php" alt="验证码" class="captcha-img" style="height: 38px; cursor: pointer;" onclick="this.src='captcha.php?'+Math.random()">
+                    </div>
+                    <div class="invalid-feedback">请输入验证码</div>
                 </div>
 
                 <div class="d-grid gap-2">

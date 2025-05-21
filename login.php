@@ -10,33 +10,42 @@ if (isLoggedIn()) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
+    $captcha = strtoupper(trim($_POST['captcha'] ?? ''));
     
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->execute([$username]);
-        $user = $stmt->fetch();
-        
-        if ($user && password_verify($password, $user['password'])) {
-            // 设置会话数据
-            $_SESSION['user'] = [
-                'id' => $user['id'],
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'role' => $user['role'],
-                'avatar' => $user['avatar']
-            ];
+    // 验证验证码
+    if (empty($captcha) || !isset($_SESSION['captcha']) || $captcha !== $_SESSION['captcha']) {
+        $_SESSION['error_message'] = '验证码错误';
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+            $stmt->execute([$username]);
+            $user = $stmt->fetch();
             
-            // 根据角色重定向
-            if ($user['role'] === 'admin') {
-                redirect('/admin/index.php');
+            if ($user && password_verify($password, $user['password'])) {
+                // 清除验证码
+                unset($_SESSION['captcha']);
+                
+                // 设置会话数据
+                $_SESSION['user'] = [
+                    'id' => $user['id'],
+                    'username' => $user['username'],
+                    'email' => $user['email'],
+                    'role' => $user['role'],
+                    'avatar' => $user['avatar']
+                ];
+                
+                // 根据角色重定向
+                if ($user['role'] === 'admin') {
+                    redirect('/admin/index.php');
+                } else {
+                    redirect('/');
+                }
             } else {
-                redirect('/');
+                $_SESSION['error_message'] = '用户名或密码错误';
             }
-        } else {
-            $_SESSION['error_message'] = '用户名或密码错误';
+        } catch (Exception $e) {
+            $_SESSION['error_message'] = '登录失败：' . $e->getMessage();
         }
-    } catch (Exception $e) {
-        $_SESSION['error_message'] = '登录失败：' . $e->getMessage();
     }
 }
 
@@ -68,6 +77,14 @@ require_once 'includes/header.php';
                         <div class="mb-3">
                             <label for="password" class="form-label">密码</label>
                             <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="captcha" class="form-label">验证码</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="captcha" name="captcha" required>
+                                <img src="captcha.php" alt="验证码" class="captcha-img" style="height: 38px; cursor: pointer;" onclick="this.src='captcha.php?'+Math.random()">
+                            </div>
+                            <div class="invalid-feedback">请输入验证码</div>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
