@@ -1,3 +1,16 @@
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS library CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 使用数据库
+USE library;
+
+-- 删除已存在的表（注意删除顺序，先删除有外键约束的表）
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS borrow_records;
+DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS users;
+
 -- 用户表
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -17,8 +30,8 @@ CREATE TABLE books (
     isbn VARCHAR(20) UNIQUE NOT NULL,
     description TEXT,
     cover_image VARCHAR(255),
-    published_date DATE DEFAULT CURRENT_DATE,
-    category_id INT,
+    published_date DATE NULL,
+    category_id INT NOT NULL,
     stock_quantity INT DEFAULT 1,
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
@@ -56,7 +69,25 @@ CREATE TABLE reviews (
     FOREIGN KEY (book_id) REFERENCES books(id)
 );
 
+-- 添加索引
+CREATE INDEX idx_books_category ON books(category_id);
+CREATE INDEX idx_borrow_records_user ON borrow_records(user_id);
+CREATE INDEX idx_borrow_records_book ON borrow_records(book_id);
+CREATE INDEX idx_reviews_user ON reviews(user_id);
+CREATE INDEX idx_reviews_book ON reviews(book_id);
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_books_isbn ON books(isbn);
+
+-- 插入初始图书分类
+INSERT INTO categories (name, description) VALUES 
+('Test1', 'Test classification-1'),
+('Test2', 'Test classification-2'),
+('Test3', 'Test classification-3'),
+('Test4', 'Test classification-4'),
+('Test5', 'Test classification-5');
+
 -- 插入测试用户
 INSERT INTO users (username, password, email, role) VALUES 
-('Test', '123456', 'Test@email.com', 'user'),
+('Testuser', '123456', 'Test@email.com', 'user'),
 ('Admin', '123456', 'Admin@email.com', 'admin');
