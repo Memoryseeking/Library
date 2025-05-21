@@ -15,11 +15,11 @@ $user = $stmt->fetch();
 
 // 处理表单提交
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $current_password = trim($_POST['current_password']);
-    $new_password = trim($_POST['new_password']);
-    $confirm_password = trim($_POST['confirm_password']);
+    $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $current_password = trim($_POST['current_password'] ?? '');
+    $new_password = trim($_POST['new_password'] ?? '');
+    $confirm_password = trim($_POST['confirm_password'] ?? '');
     
     try {
         // 验证用户名是否已存在
@@ -45,13 +45,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $uploader->delete($avatar);
                         }
                         $avatar = $fileName;
+                        
+                        // 只更新头像
+                        $stmt = $pdo->prepare("UPDATE users SET avatar = ? WHERE id = ?");
+                        $stmt->execute([$avatar, $user_id]);
+                        
+                        $_SESSION['success_message'] = '头像更新成功';
+                        $_SESSION['user']['avatar'] = $avatar;
+                        redirect('/profile.php');
                     } else {
                         $_SESSION['error_message'] = '头像上传失败：' . $uploader->getError();
                     }
-                }
-
-                if (!isset($_SESSION['error_message'])) {
-                    // 如果要修改密码
+                } else {
+                    // 处理其他信息更新
                     if (!empty($new_password)) {
                         // 验证当前密码
                         if (!password_verify($current_password, $user['password'])) {
@@ -62,14 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             // 更新用户信息（包括密码）
                             $stmt = $pdo->prepare("
                                 UPDATE users 
-                                SET username = ?, email = ?, password = ?, avatar = ?
+                                SET username = ?, email = ?, password = ?
                                 WHERE id = ?
                             ");
                             $stmt->execute([
                                 $username, 
                                 $email, 
                                 password_hash($new_password, PASSWORD_DEFAULT),
-                                $avatar,
                                 $user_id
                             ]);
                         }
@@ -77,10 +82,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         // 更新用户信息（不修改密码）
                         $stmt = $pdo->prepare("
                             UPDATE users 
-                            SET username = ?, email = ?, avatar = ?
+                            SET username = ?, email = ?
                             WHERE id = ?
                         ");
-                        $stmt->execute([$username, $email, $avatar, $user_id]);
+                        $stmt->execute([$username, $email, $user_id]);
                     }
 
                     if (!isset($_SESSION['error_message'])) {
@@ -88,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         // 更新session中的用户信息
                         $_SESSION['user']['username'] = $username;
                         $_SESSION['user']['email'] = $email;
-                        $_SESSION['user']['avatar'] = $avatar;
                         redirect('/profile.php');
                     }
                 }
@@ -171,6 +175,19 @@ require_once 'includes/header.php';
                     </form>
                 </div>
             </div>
+
+            <!-- 添加注销账户卡片 -->
+            <div class="card fade-in mt-4 border-danger">
+                <div class="card-body">
+                    <h5 class="card-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>注销账户
+                    </h5>
+                    <p class="text-muted">警告：注销账户后，您的所有数据将被永久删除，且无法恢复。</p>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                        <i class="fas fa-user-times me-2"></i>注销账户
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="col-md-4">
@@ -192,11 +209,47 @@ require_once 'includes/header.php';
                             <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
                             <div class="form-text">支持 JPG、PNG、GIF 格式，最大 5MB</div>
                         </div>
+                        <input type="hidden" name="username" value="<?php echo htmlspecialchars($user['username']); ?>">
+                        <input type="hidden" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-upload me-2"></i>更新头像
                         </button>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加注销账户确认模态框 -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAccountModalLabel">确认注销账户</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    此操作将永久删除您的账户和所有相关数据，且无法恢复。请谨慎操作！
+                </div>
+                <form id="deleteAccountForm" method="POST" action="delete_account.php">
+                    <div class="mb-3">
+                        <label for="captcha" class="form-label">请输入验证码</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="captcha" name="captcha" required>
+                            <img src="captcha.php" class="captcha-img" alt="验证码" style="height: 38px; cursor: pointer;" 
+                                 onclick="this.src='captcha.php?'+Math.random()">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="submit" form="deleteAccountForm" class="btn btn-danger">
+                    <i class="fas fa-user-times me-2"></i>确认注销
+                </button>
             </div>
         </div>
     </div>
