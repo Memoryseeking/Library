@@ -70,16 +70,55 @@ require_once '../includes/header.php';
 ?>
 
 <div class="row mb-4">
-    <div class="col-md-8">
+    <div class="col">
         <h2>图书管理</h2>
     </div>
-    <div class="col-md-4 text-end">
-        <a href="book_edit.php" class="btn btn-primary">添加新图书</a>
+    <div class="col-auto">
+        <a href="book_edit.php" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>添加图书
+        </a>
+        <button type="button" class="btn btn-danger" id="batchDeleteBtn" disabled>
+            <i class="fas fa-trash-alt me-2"></i>批量删除
+        </button>
+    </div>
+</div>
+
+<!-- 搜索表单 -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="search" 
+                       placeholder="搜索书名、作者或ISBN" 
+                       value="<?php echo htmlspecialchars($search); ?>">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="category">
+                    <option value="">所有分类</option>
+                    <?php foreach ($categories as $cat): ?>
+                    <option value="<?php echo $cat['id']; ?>" 
+                            <?php echo $category == $cat['id'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($cat['name']); ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i>搜索
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="books.php" class="btn btn-secondary w-100">
+                    <i class="fas fa-redo me-2"></i>重置
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 
 <?php if (isset($_SESSION['success_message'])): ?>
-    <div class="alert alert-success">
+    <div class="alert alert-success fade-in">
         <?php 
         echo htmlspecialchars($_SESSION['success_message']);
         unset($_SESSION['success_message']);
@@ -88,7 +127,7 @@ require_once '../includes/header.php';
 <?php endif; ?>
 
 <?php if (isset($_SESSION['error_message'])): ?>
-    <div class="alert alert-danger">
+    <div class="alert alert-danger fade-in">
         <?php 
         echo htmlspecialchars($_SESSION['error_message']);
         unset($_SESSION['error_message']);
@@ -96,95 +135,127 @@ require_once '../includes/header.php';
     </div>
 <?php endif; ?>
 
-<div class="card mb-4">
+<div class="card">
     <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-4">
-                <input type="text" name="search" class="form-control" placeholder="搜索图书..." value="<?php echo htmlspecialchars($search); ?>">
-            </div>
-            <div class="col-md-3">
-                <select name="category" class="form-select">
-                    <option value="0">所有分类</option>
-                    <?php foreach ($categories as $cat): ?>
-                        <option value="<?php echo $cat['id']; ?>" <?php echo $category === $cat['id'] ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($cat['name']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">搜索</button>
+        <form id="booksForm" method="POST" action="batch_delete_books.php">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th width="40">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                </div>
+                            </th>
+                            <th>封面</th>
+                            <th>书名</th>
+                            <th>作者</th>
+                            <th>ISBN</th>
+                            <th>分类</th>
+                            <th>库存</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($books as $book): ?>
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input book-checkbox" type="checkbox" 
+                                           name="book_ids[]" value="<?php echo $book['id']; ?>">
+                                </div>
+                            </td>
+                            <td>
+                                <?php if ($book['cover_image']): ?>
+                                    <img src="/uploads/covers/<?php echo htmlspecialchars($book['cover_image']); ?>" 
+                                         alt="封面" style="width: 50px; height: 70px; object-fit: cover;">
+                                <?php else: ?>
+                                    <img src="/assets/images/no-cover.jpg" alt="无封面" 
+                                         style="width: 50px; height: 70px; object-fit: cover;">
+                                <?php endif; ?>
+                            </td>
+                            <td><?php echo htmlspecialchars($book['title']); ?></td>
+                            <td><?php echo htmlspecialchars($book['author']); ?></td>
+                            <td><?php echo htmlspecialchars($book['isbn']); ?></td>
+                            <td><?php echo htmlspecialchars($book['category_name']); ?></td>
+                            <td><?php echo $book['stock_quantity']; ?></td>
+                            <td>
+                                <a href="book_edit.php?id=<?php echo $book['id']; ?>" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </form>
     </div>
 </div>
 
-<div class="table-responsive">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>封面</th>
-                <th>标题</th>
-                <th>作者</th>
-                <th>ISBN</th>
-                <th>分类</th>
-                <th>库存</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($books as $book): ?>
-                <tr>
-                    <td><?php echo $book['id']; ?></td>
-                    <td>
-                        <?php if ($book['cover_image']): ?>
-                            <img src="/uploads/covers/<?php echo htmlspecialchars($book['cover_image']); ?>" 
-                                 style="width: 50px; height: 70px; object-fit: cover;">
-                        <?php else: ?>
-                            <span class="text-muted">无封面</span>
-                        <?php endif; ?>
-                    </td>
-                    <td><?php echo htmlspecialchars($book['title']); ?></td>
-                    <td><?php echo htmlspecialchars($book['author']); ?></td>
-                    <td><?php echo htmlspecialchars($book['isbn']); ?></td>
-                    <td><?php echo htmlspecialchars($book['category_name']); ?></td>
-                    <td><?php echo $book['stock_quantity']; ?></td>
-                    <td>
-                        <a href="book_edit.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-primary">编辑</a>
-                        <form method="POST" class="d-inline" onsubmit="return confirm('确定要删除这本图书吗？');">
-                            <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
-                            <button type="submit" name="delete_book" class="btn btn-sm btn-danger">删除</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+<!-- 批量删除确认模态框 -->
+<div class="modal fade" id="batchDeleteModal" tabindex="-1" aria-labelledby="batchDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="batchDeleteModalLabel">确认批量删除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    此操作将永久删除选中的图书，且无法恢复。请谨慎操作！
+                </div>
+                <form id="batchDeleteForm" method="POST" action="batch_delete_books.php">
+                    <input type="hidden" name="book_ids" id="selectedBookIds">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="submit" form="batchDeleteForm" class="btn btn-danger">
+                    <i class="fas fa-trash-alt me-2"></i>确认删除
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<?php if ($total_pages > 1): ?>
-    <nav class="mt-4">
-        <ul class="pagination justify-content-center">
-            <?php if ($page > 1): ?>
-                <li class="page-item">
-                    <a class="page-link" href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>">上一页</a>
-                </li>
-            <?php endif; ?>
-            
-            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <li class="page-item <?php echo $i === $page ? 'active' : ''; ?>">
-                    <a class="page-link" href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>"><?php echo $i; ?></a>
-                </li>
-            <?php endfor; ?>
-            
-            <?php if ($page < $total_pages): ?>
-                <li class="page-item">
-                    <a class="page-link" href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>">下一页</a>
-                </li>
-            <?php endif; ?>
-        </ul>
-    </nav>
-<?php endif; ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('selectAll');
+    const bookCheckboxes = document.querySelectorAll('.book-checkbox');
+    const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+    const selectedBookIds = document.getElementById('selectedBookIds');
+    
+    // 全选/取消全选
+    selectAll.addEventListener('change', function() {
+        bookCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateBatchDeleteButton();
+    });
+    
+    // 更新批量删除按钮状态
+    bookCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBatchDeleteButton);
+    });
+    
+    function updateBatchDeleteButton() {
+        const checkedBoxes = document.querySelectorAll('.book-checkbox:checked');
+        batchDeleteBtn.disabled = checkedBoxes.length === 0;
+    }
+    
+    // 批量删除按钮点击事件
+    batchDeleteBtn.addEventListener('click', function() {
+        const checkedBoxes = document.querySelectorAll('.book-checkbox:checked');
+        const ids = Array.from(checkedBoxes).map(cb => cb.value);
+        selectedBookIds.value = JSON.stringify(ids);
+        
+        const modal = new bootstrap.Modal(document.getElementById('batchDeleteModal'));
+        modal.show();
+    });
+});
+</script>
 
 <?php require_once '../includes/footer.php'; ?> 
