@@ -15,16 +15,6 @@ session_start();
 // 时区设置
 date_default_timezone_set('Asia/Shanghai');
 
-// 安全设置
-ini_set('session.cookie_secure', 1);
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_samesite', 'Strict');
-
-// 基础URL配置
-$base_url = 'https://' . $_SERVER['HTTP_HOST'];
-$current_url = $base_url . $_SERVER['REQUEST_URI'];
-
 // 数据库连接
 try {
     $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
@@ -36,10 +26,6 @@ try {
 
 // 通用函数
 function redirect($url) {
-    // 确保URL使用HTTPS
-    if (strpos($url, 'http') !== 0) {
-        $url = 'https://' . $_SERVER['HTTP_HOST'] . $url;
-    }
     header("Location: $url");
     exit();
 }
