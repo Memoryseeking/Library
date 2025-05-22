@@ -2,7 +2,7 @@
 // 数据库配置
 $db_host = 'localhost';
 $db_name = 'library';
-$db_user = 'root';
+$db_user = 'rootuser';
 $db_pass = 'rootpass';
 
 // 错误报告设置
