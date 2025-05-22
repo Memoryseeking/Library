@@ -22,6 +22,13 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 分类表
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
 -- 图书表
 CREATE TABLE books (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -34,13 +41,6 @@ CREATE TABLE books (
     category_id INT NOT NULL,
     stock_quantity INT DEFAULT 1,
     FOREIGN KEY (category_id) REFERENCES categories(id)
-);
-
--- 分类表
-CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT
 );
 
 -- 借阅记录表
