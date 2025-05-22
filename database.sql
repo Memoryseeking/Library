@@ -89,5 +89,5 @@ INSERT INTO categories (name, description) VALUES
 
 -- 插入测试用户
 INSERT INTO users (username, password, email, role) VALUES 
-('Testuser', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Test@email.com', 'user'),
-('Admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin@email.com', 'admin');
+('Testuser', '$2y$10$Y7h073OCEhPBnu3n1PQl3.De3D0rLOXjsMNpptA/ziJn3zAGFmbh6', 'Test@email.com', 'user'),
+('Admin', '$2y$10$Y7h073OCEhPBnu3n1PQl3.De3D0rLOXjsMNpptA/ziJn3zAGFmbh6', 'Admin@email.com', 'admin');
