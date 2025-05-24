@@ -39,11 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->beginTransaction();
         
         // 删除用户的借阅记录
-        $stmt = $pdo->prepare("DELETE FROM borrows WHERE user_id = ?");
+        $stmt = $pdo->prepare("DELETE FROM borrow_records WHERE user_id = ?");
         $stmt->execute([$user_id]);
         
         // 删除用户的评论
-        $stmt = $pdo->prepare("DELETE FROM comments WHERE user_id = ?");
+        $stmt = $pdo->prepare("DELETE FROM reviews WHERE user_id = ?");
         $stmt->execute([$user_id]);
         
         // 删除用户头像文件

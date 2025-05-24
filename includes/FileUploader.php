@@ -1,4 +1,6 @@
 <?php
+namespace Library\Includes;
+
 class FileUploader {
     private $uploadDir;
     private $allowedTypes;

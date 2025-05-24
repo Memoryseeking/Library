@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/config.php';
+require_once '../includes/FileUploader.php';
 
 // 检查管理员权限
 requireAdmin();
@@ -22,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $books = $stmt->fetchAll();
         
         // 删除图书封面文件
-        $uploader = new FileUploader(__DIR__ . '/../uploads/covers');
+        $uploader = new \Library\Includes\FileUploader(__DIR__ . '/../uploads/covers');
         foreach ($books as $book) {
             if ($book['cover_image']) {
                 $uploader->delete($book['cover_image']);
@@ -30,11 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // 删除相关的借阅记录
-        $stmt = $pdo->prepare("DELETE FROM borrows WHERE book_id IN (" . str_repeat('?,', count($book_ids) - 1) . "?)");
+        $stmt = $pdo->prepare("DELETE FROM borrow_records WHERE book_id IN (" . str_repeat('?,', count($book_ids) - 1) . "?)");
         $stmt->execute($book_ids);
         
         // 删除相关的评论
-        $stmt = $pdo->prepare("DELETE FROM comments WHERE book_id IN (" . str_repeat('?,', count($book_ids) - 1) . "?)");
+        $stmt = $pdo->prepare("DELETE FROM reviews WHERE book_id IN (" . str_repeat('?,', count($book_ids) - 1) . "?)");
         $stmt->execute($book_ids);
         
         // 删除图书
