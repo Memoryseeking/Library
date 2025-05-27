@@ -1,145 +1,145 @@
-# 图书管理系统
-## 模块代码：COM6023M
-## 学生信息：Zhengyang Liu 24014994
+# Library Management System
+## Module Code: COM6023M
+## Student Information: Zhengyang Liu 24014994
 
 ---
 
-## 1. 应用说明
+## 1. Application Description
 
-### 1.1 应用目的
-图书管理系统是一个基于PHP的Web应用程序，提供完整的图书管理、借阅管理和用户管理功能，为图书馆或图书管理机构提供数字化解决方案。
+### 1.1 Purpose
+The Library Management System is a PHP-based web application that provides comprehensive library management, book lending, and user management functionalities, offering a digital solution for libraries and book management institutions.
 
-### 1.2 目标用户
-- 图书馆管理人员：管理图书、用户和借阅记录
-- 普通用户：浏览图书、借阅图书、管理个人借阅记录
+### 1.2 Target Users
+- Library administrators: Manage books, users, and lending records
+- Regular users: Browse books, borrow books, manage personal lending records
 
-### 1.3 核心功能
-- 用户认证与授权系统（注册、登录、权限控制）
-- 图书信息管理（添加、编辑、删除、分类）
-- 借阅管理（借阅、归还、历史记录）
-- 用户管理（信息编辑、头像上传）
-- 评论与评分系统
+### 1.3 Core Features
+- User authentication and authorization system (registration, login, permission control)
+- Book information management (add, edit, delete, categorize)
+- Lending management (borrowing, returning, history records)
+- User management (profile editing, avatar upload)
+- Review and rating system
 
-### 1.4 技术架构
-- **后端**：PHP 7.4+, MySQL 5.7+, PDO
-- **前端**：HTML5, CSS3, JavaScript, Bootstrap 5
-- **认证**：自定义JWT实现, Session
+### 1.4 Technical Architecture
+- **Backend**: PHP 7.4+, MySQL 5.7+, PDO
+- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
+- **Authentication**: Custom JWT implementation, Session
 
-### 1.5 API端点
-#### 用户认证
-- POST /login.php - 用户登录
-- POST /register.php - 用户注册
-- GET /logout.php - 用户登出
+### 1.5 API Endpoints
+#### User Authentication
+- POST /login.php - User login
+- POST /register.php - User registration
+- GET /logout.php - User logout
 
-#### 图书管理
-- GET /list.php - 获取图书列表（支持搜索和分类筛选）
-- GET /detail.php - 获取图书详情
-- POST /admin/book_edit.php - 添加/编辑图书（需管理员权限）
-- POST /admin/books.php - 删除图书（需管理员权限）
+#### Book Management
+- GET /list.php - Get book list (supports search and category filtering)
+- GET /detail.php - Get book details
+- POST /admin/book_edit.php - Add/edit book (admin permission required)
+- POST /admin/books.php - Delete book (admin permission required)
 
-#### 借阅管理
-- POST /borrow.php - 借阅图书
-- GET /borrow_records.php - 获取借阅记录
-- POST /admin/borrows.php - 管理借阅记录（需管理员权限）
+#### Lending Management
+- POST /borrow.php - Borrow book
+- GET /borrow_records.php - Get lending records
+- POST /admin/borrows.php - Manage lending records (admin permission required)
 
-### 1.6 数据库结构
-主要数据表：
-- `users` - 用户信息表
-- `books` - 图书信息表
-- `borrow_records` - 借阅记录表
-- `categories` - 图书分类表
-- `reviews` - 评论表
+### 1.6 Database Structure
+Main data tables:
+- `users` - User information table
+- `books` - Book information table
+- `borrow_records` - Lending records table
+- `categories` - Book category table
+- `reviews` - Review table
 
 ---
 
-## 2. 安装指南
+## 2. Installation Guide
 
-### 2.1 服务器环境要求
+### 2.1 Server Environment Requirements
 - PHP >= 7.4
 - MySQL >= 5.7
-- Apache/Nginx Web服务器
-- 必要的PHP扩展：PDO, JSON, bcrypt
+- Apache/Nginx Web server
+- Required PHP extensions: PDO, JSON, bcrypt
 
-### 2.2 依赖库安装
+### 2.2 Dependency Installation
 ```bash
-# 安装PHP依赖
+# Install PHP dependencies
 composer install
 
-# 安装前端依赖
+# Install frontend dependencies
 npm install
 ```
 
-### 2.3 安装步骤
-1. **克隆仓库**
+### 2.3 Installation Steps
+1. **Clone Repository**
    ```bash
-   git clone [仓库地址]
+   git clone [repository address]
    ```
 
-2. **数据库配置**
-   - 创建名为"library"的新MySQL数据库
-   - 导入项目根目录中的`database.sql`文件
-   - 修改`includes/config.php`中的数据库连接信息
+2. **Database Configuration**
+   - Create a new MySQL database named "library"
+   - Import the `database.sql` file from the project root directory
+   - Modify database connection information in `includes/config.php`
 
-3. **服务器配置**
-   - 将项目目录设置为Web根目录
-   - 确保`uploads`目录可写
-   - 配置URL重写规则（如有需要）
+3. **Server Configuration**
+   - Set the project directory as the web root directory
+   - Ensure the `uploads` directory is writable
+   - Configure URL rewrite rules (if needed)
 
-4. **默认账户**
-   - 管理员账号：
-     - 用户名：Admin
-     - 密码：123456
-     - 邮箱：Admin@email.com
-   - 测试用户账号：
-     - 用户名：Testuser
-     - 密码：123456
-     - 邮箱：Test@email.com
-
----
-
-## 3. 访问说明
-
-### 3.1 应用访问
-- URL：http://8.218.141.218
-- 默认端口：80
+4. **Default Accounts**
+   - Administrator account:
+     - Username: Admin
+     - Password: 123456
+     - Email: Admin@email.com
+   - Test user account:
+     - Username: Testuser
+     - Password: 123456
+     - Email: Test@email.com
 
 ---
 
-## 4. 安全特性
+## 3. Access Instructions
 
-### 4.1 密码安全
-- 使用PHP内置的BCrypt哈希算法加密存储
-
-### 4.2 输入验证
-- 服务器端验证所有用户输入
-- 使用PDO预处理语句防止SQL注入
-- XSS防护
-
-### 4.3 认证机制
-- JWT令牌认证（有效期1小时）
-- 支持token自动刷新
-- PHP会话管理
-- 基于角色的访问控制
-- 双重验证机制（Session + JWT）
+### 3.1 Application Access
+- URL: http://8.218.141.218
+- Default port: 80
 
 ---
 
-## 5. 项目结构
-- `/` - 项目根目录，包含主要PHP文件
-- `/admin/` - 管理员功能相关文件
-- `/includes/` - 包含配置文件和公共组件
-- `/assets/` - 静态资源，如CSS和JavaScript
-- `/uploads/` - 上传文件存储目录
+## 4. Security Features
+
+### 4.1 Password Security
+- Using PHP's built-in BCrypt hashing algorithm for encrypted storage
+
+### 4.2 Input Validation
+- Server-side validation of all user inputs
+- Using PDO prepared statements to prevent SQL injection
+- XSS protection
+
+### 4.3 Authentication Mechanism
+- JWT token authentication (1-hour validity)
+- Support for token auto-refresh
+- PHP session management
+- Role-based access control
+- Dual verification mechanism (Session + JWT)
 
 ---
 
-## 6. 参考资源
-- PHP官方文档：[php.net](https://www.php.net/docs.php)
-- MySQL文档：[dev.mysql.com](https://dev.mysql.com/doc/)
-- Bootstrap文档：[getbootstrap.com](https://getbootstrap.com/docs/)
-- JWT规范：[jwt.io](https://jwt.io/)
+## 5. Project Structure
+- `/` - Project root directory, containing main PHP files
+- `/admin/` - Files related to administrator functions
+- `/includes/` - Configuration files and common components
+- `/assets/` - Static resources such as CSS and JavaScript
+- `/uploads/` - Directory for storing uploaded files
 
 ---
 
-## 许可证
+## 6. Reference Resources
+- PHP Official Documentation: [php.net](https://www.php.net/docs.php)
+- MySQL Documentation: [dev.mysql.com](https://dev.mysql.com/doc/)
+- Bootstrap Documentation: [getbootstrap.com](https://getbootstrap.com/docs/)
+- JWT Specification: [jwt.io](https://jwt.io/)
+
+---
+
+## License
 MIT License 
