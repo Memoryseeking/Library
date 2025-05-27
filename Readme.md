@@ -59,30 +59,22 @@ Main data tables:
 - MySQL >= 5.7
 - Apache/Nginx Web server
 - Required PHP extensions: PDO, JSON, bcrypt
+- Internet connection for CDN resources (or local copies)
 
 ### 2.2 Third-Party Libraries
-#### PHP Libraries (via Composer)
-- firebase/php-jwt: ^5.4.0 - For JWT authentication
-- phpmailer/phpmailer: ^6.5.0 - For email notifications
-- vlucas/phpdotenv: ^5.3.0 - For environment variables management
-- intervention/image: ^2.7.0 - For image processing
+This project uses the following third-party libraries via CDN:
+- Bootstrap 5.1.3 (CSS framework)
+- Font Awesome 6.0.0 (Icon library)
+- jQuery 3.6.0 (JavaScript library)
 
-#### Frontend Libraries (via NPM)
-- bootstrap: ^5.1.3 - CSS framework
-- jquery: ^3.6.0 - JavaScript library
-- chart.js: ^3.7.0 - For data visualization
-- font-awesome: ^5.15.4 - For icons
+No local package installation is required as all libraries are loaded from CDN.
 
-### 2.3 Dependency Installation
-```bash
-# Install PHP dependencies
-composer install
+#### Optional: Local Dependency Setup
+If you need to deploy in an offline environment, download these libraries and update references in:
+- `includes/header.php` (Bootstrap and Font Awesome)
+- `includes/footer.php` (Bootstrap JS and jQuery)
 
-# Install frontend dependencies
-npm install
-```
-
-### 2.4 Installation Steps
+### 2.3 Installation Steps
 1. **Clone Repository**
    ```bash
    git clone https://github.com/yourusername/library-system.git
@@ -98,7 +90,11 @@ npm install
    - Ensure the `uploads` directory is writable
    - Configure URL rewrite rules (if needed)
 
-4. **Default Accounts**
+4. **JWT Configuration**
+   - Update the secret key in `includes/JWT.php` (replace 'your-secret-key')
+   - Adjust token expiration time if needed (default is 1 hour)
+
+5. **Default Accounts**
    - Administrator account:
      - Username: Admin
      - Password: 123456
