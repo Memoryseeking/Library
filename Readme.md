@@ -60,7 +60,20 @@ Main data tables:
 - Apache/Nginx Web server
 - Required PHP extensions: PDO, JSON, bcrypt
 
-### 2.2 Dependency Installation
+### 2.2 Third-Party Libraries
+#### PHP Libraries (via Composer)
+- firebase/php-jwt: ^5.4.0 - For JWT authentication
+- phpmailer/phpmailer: ^6.5.0 - For email notifications
+- vlucas/phpdotenv: ^5.3.0 - For environment variables management
+- intervention/image: ^2.7.0 - For image processing
+
+#### Frontend Libraries (via NPM)
+- bootstrap: ^5.1.3 - CSS framework
+- jquery: ^3.6.0 - JavaScript library
+- chart.js: ^3.7.0 - For data visualization
+- font-awesome: ^5.15.4 - For icons
+
+### 2.3 Dependency Installation
 ```bash
 # Install PHP dependencies
 composer install
@@ -69,10 +82,10 @@ composer install
 npm install
 ```
 
-### 2.3 Installation Steps
+### 2.4 Installation Steps
 1. **Clone Repository**
    ```bash
-   git clone [repository address]
+   git clone https://github.com/yourusername/library-system.git
    ```
 
 2. **Database Configuration**
