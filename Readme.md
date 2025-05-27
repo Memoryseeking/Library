@@ -26,21 +26,52 @@ The Library Management System is a PHP-based web application that provides compr
 - **Authentication**: Custom JWT implementation, Session
 
 ### 1.5 API Endpoints
+
 #### User Authentication
-- POST /login.php - User login
-- POST /register.php - User registration
-- GET /logout.php - User logout
+- `POST /login.php` - User login
+- `POST /register.php` - User registration
+- `GET /logout.php` - User logout
+- `POST /login_process.php` - Process login credentials and generate JWT token
+
+#### User Management
+- `GET /profile.php` - View user profile
+- `POST /profile.php` - Update user profile information
+- `POST /profile.php` - Change user password (same endpoint with different parameters)
+- `POST /delete_account.php` - Delete user account
+- `GET /captcha.php` - Generate CAPTCHA image for form validation
 
 #### Book Management
-- GET /list.php - Get book list (supports search and category filtering)
-- GET /detail.php - Get book details
-- POST /admin/book_edit.php - Add/edit book (admin permission required)
-- POST /admin/books.php - Delete book (admin permission required)
+- `GET /list.php` - Get book list (supports search and category filtering)
+- `GET /detail.php` - Get book details
+- `POST /admin/book_edit.php` - Add/edit book (admin permission required)
+- `POST /admin/books.php` - Delete book (admin permission required)
+- `POST /admin/batch_delete_books.php` - Batch delete multiple books (admin permission required)
 
 #### Lending Management
-- POST /borrow.php - Borrow book
-- GET /borrow_records.php - Get lending records
-- POST /admin/borrows.php - Manage lending records (admin permission required)
+- `POST /borrow.php` - Borrow book
+- `GET /borrow_records.php` - Get lending records
+- `POST /admin/borrows.php` - Manage lending records (admin permission required)
+  - Update status (borrowed, returned, overdue)
+  - Process returns
+
+#### Category Management
+- `GET /admin/categories.php` - List all categories (admin permission required)
+- `POST /admin/category_edit.php` - Add/edit category (admin permission required)
+- `POST /admin/batch_delete_categories.php` - Batch delete categories (admin permission required)
+
+#### Review Management
+- `GET /admin/reviews.php` - List all reviews (admin permission required)
+- `POST /admin/review_action.php` - Approve or reject review (admin permission required)
+- `POST /admin/reviews.php` - Delete review (admin permission required)
+
+#### Admin Dashboard
+- `GET /admin/dashboard.php` - Admin dashboard with statistics
+- `GET /admin/users.php` - List all users (admin permission required)
+- `POST /admin/user_edit.php` - Add/edit user (admin permission required)
+- `POST /admin/delete_user.php` - Delete user (admin permission required)
+
+#### System
+- `GET /check_db.php` - Check database connection status
 
 ### 1.6 Database Structure
 Main data tables:
