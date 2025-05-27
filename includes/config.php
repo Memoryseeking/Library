@@ -3,7 +3,7 @@
 $db_host = 'localhost';
 $db_name = 'library';
 $db_user = 'root';
-$db_pass = 'rootpass';
+$db_pass = '';
 
 // 错误报告设置
 error_reporting(E_ALL);
